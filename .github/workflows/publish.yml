@@ -24,10 +24,10 @@ jobs:
         run: |
           echo $BASE_VERSION
           echo ${{ env.BASE_VERSION }}
-      - name: Set up JDK 17
+      - name: Set up JDK 25
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '25'
           distribution: 'adopt'
           cache: gradle
       - name: Grant execute permission for gradlew
