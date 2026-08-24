@@ -5,6 +5,9 @@ on:
     tags:
       - v*
 
+permissions:
+  contents: write
+
 jobs:
   publish:
     strategy:
@@ -15,7 +18,6 @@ jobs:
     name: 'Publish with INTELLIJ ${{ matrix.intellijVersion }}'
     env:
       INTELLIJ_VERSION: ${{ matrix.intellijVersion }}
-      INTELLIJ_PUBLISH_TOKEN: ${{ secrets.INTELLIJ_PUBLISH_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - name: Evaluate base version
@@ -34,5 +36,9 @@ jobs:
         run: chmod +x gradlew
       - name: Run build with gradle
         run: ./gradlew --warning-mode=all build
-      - name: Publish plugin
-        run: ./gradlew publishPlugin
+      - name: Build plugin distribution
+        run: ./gradlew buildPlugin
+      - name: Publish to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/distributions/*.zip
