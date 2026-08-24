@@ -4,6 +4,7 @@ import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.LanguageLevelProjectExtension;
+import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess;
 import com.intellij.pom.java.LanguageLevel;
 import com.intellij.testFramework.LightProjectDescriptor;
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture;
@@ -13,9 +14,11 @@ import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory;
 import com.intellij.testFramework.fixtures.TempDirTestFixture;
 import com.intellij.testFramework.fixtures.TestFixtureBuilder;
 import com.intellij.testFramework.fixtures.impl.LightTempDirTestFixtureImpl;
+import com.intellij.util.PathUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
+import java.io.File;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
@@ -41,6 +44,11 @@ public abstract class BaseIntellijTest {
 
         fixture.setTestDataPath(getTestDataPath());
         fixture.setUp();
+
+        VfsRootAccess.allowRootAccess(
+                fixture.getProjectDisposable(),
+                PathUtil.toSystemIndependentName(new File(getTestDataPath()).getAbsolutePath())
+        );
 
         LanguageLevelProjectExtension.getInstance(getProject())
                 .setLanguageLevel(getLanguageLevel());
