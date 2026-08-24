@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>dev.khbd.interp4j-intellij-plugin</id>
     <name>Interp4j</name>
-    <vendor email="khadanovich.sergey@gmail.com">Khadanovich Sergei</vendor>
+    <vendor>Igor Petrenko, Khadanovich Sergei</vendor>
 
     <description>Plugin to add must-have features for projects which use interp4j library</description>
 
@@ -71,6 +71,14 @@
         <implicitUsageProvider implementation="dev.khbd.interp4j.intellij.usage.InStringLiteralsImplicitUsageProvider"/>
 
         <lang.inspectionSuppressor language="JAVA" implementationClass="dev.khbd.interp4j.intellij.inspection.suppressor.UnreachableCodeInspectionSuppressor"/>
+
+        <lang.importOptimizer language="JAVA" order="first"
+                implementationClass="dev.khbd.interp4j.intellij.optimizer.InterpolationImportOptimizer"/>
+
+        <daemon.intentionActionFilter implementation="dev.khbd.interp4j.intellij.intention.InterpolationImportIntentionFilter"/>
+
+        <lang.refactoringSupport language="JAVA" order="first"
+                implementationClass="dev.khbd.interp4j.intellij.refactoring.InterpolationIntroduceRefactoringSupportProvider"/>
 
     </extensions>
 

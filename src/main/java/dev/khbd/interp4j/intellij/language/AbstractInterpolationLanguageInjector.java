@@ -5,11 +5,9 @@ import com.intellij.lang.injection.MultiHostRegistrar;
 import com.intellij.lang.java.JavaLanguage;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiExpressionList;
 import com.intellij.psi.PsiLanguageInjectionHost;
 import com.intellij.psi.PsiLiteralExpression;
 import com.intellij.psi.PsiMethodCallExpression;
-import com.intellij.psi.PsiPolyadicExpression;
 import dev.khbd.interp4j.intellij.common.Interp4jPsiUtil;
 import lombok.RequiredArgsConstructor;
 
@@ -48,15 +46,7 @@ public abstract class AbstractInterpolationLanguageInjector implements MultiHost
      * @param literal string literal
      */
     protected boolean isInterpolateMethodCall(PsiLiteralExpression literal) {
-        PsiElement parent = literal.getParent();
-
-        if (parent instanceof PsiExpressionList list) {
-            return isExpressionListOfInterpolateCall(list);
-        } else if (parent instanceof PsiPolyadicExpression poly) {
-            return mayBeInterpolateCallWithConcatenatedLiterals(poly);
-        }
-
-        return false;
+        return Interp4jPsiUtil.isPartOfInterpolationCall(literal, callPredicate);
     }
 
     /**
@@ -65,22 +55,6 @@ public abstract class AbstractInterpolationLanguageInjector implements MultiHost
     abstract protected void injectLanguage(MultiHostRegistrar registrar,
                                            PsiLiteralExpression context,
                                            String value);
-
-    private boolean isExpressionListOfInterpolateCall(PsiExpressionList expressionList) {
-        PsiElement mayBeMethodCall = expressionList.getParent();
-        if (!(mayBeMethodCall instanceof PsiMethodCallExpression methodCall)) {
-            return false;
-        }
-        return callPredicate.test(methodCall);
-    }
-
-    private boolean mayBeInterpolateCallWithConcatenatedLiterals(PsiPolyadicExpression poly) {
-        PsiElement parent = poly.getParent();
-        if (parent instanceof PsiExpressionList list) {
-            return isExpressionListOfInterpolateCall(list);
-        }
-        return false;
-    }
 
     @RequiredArgsConstructor
     protected static class InjectionVisitor {

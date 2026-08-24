@@ -6,6 +6,7 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementFactory;
 import com.intellij.psi.PsiExpression;
+import com.intellij.psi.PsiExpressionList;
 import com.intellij.psi.PsiImportList;
 import com.intellij.psi.PsiImportStaticStatement;
 import com.intellij.psi.PsiJavaFile;
@@ -14,6 +15,7 @@ import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiMethodCallExpression;
 import com.intellij.psi.PsiModifier;
 import com.intellij.psi.PsiParameterList;
+import com.intellij.psi.PsiPolyadicExpression;
 import com.intellij.psi.search.GlobalSearchScope;
 import dev.khbd.interp4j.core.Interpolations;
 import dev.khbd.interp4j.core.internal.s.SInterpolator;
@@ -22,6 +24,7 @@ import lombok.experimental.UtilityClass;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 /**
  * @author Sergei_Khadanovich
@@ -140,6 +143,35 @@ public class Interp4jPsiUtil {
         }
         PsiClass psiClass = (PsiClass) parent;
         return clazz.getCanonicalName().equals(psiClass.getQualifiedName());
+    }
+
+    /**
+     * Check if the supplied expression is (or is one operand of a {@code +}-concatenation
+     * forming) the first argument of a method call matching {@code callPredicate}.
+     *
+     * @param expression    expression, typically a string literal
+     * @param callPredicate predicate identifying the interpolator method call
+     * @return {@literal true} if expression is part of such a call
+     */
+    public static boolean isPartOfInterpolationCall(@NonNull PsiExpression expression,
+                                                     @NonNull Predicate<PsiMethodCallExpression> callPredicate) {
+        PsiElement parent = expression.getParent();
+
+        if (parent instanceof PsiExpressionList list) {
+            return isExpressionListOfInterpolateCall(list, callPredicate);
+        } else if (parent instanceof PsiPolyadicExpression poly) {
+            PsiElement polyParent = poly.getParent();
+            return polyParent instanceof PsiExpressionList list
+                   && isExpressionListOfInterpolateCall(list, callPredicate);
+        }
+
+        return false;
+    }
+
+    private static boolean isExpressionListOfInterpolateCall(PsiExpressionList expressionList,
+                                                              Predicate<PsiMethodCallExpression> callPredicate) {
+        PsiElement mayBeMethodCall = expressionList.getParent();
+        return mayBeMethodCall instanceof PsiMethodCallExpression methodCall && callPredicate.test(methodCall);
     }
 
     /**
