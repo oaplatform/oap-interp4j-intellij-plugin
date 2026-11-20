@@ -2,6 +2,7 @@ package dev.khbd.interp4j.intellij;
 
 import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.LanguageLevelProjectExtension;
 import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess;
@@ -50,8 +51,9 @@ public abstract class BaseIntellijTest {
                 PathUtil.toSystemIndependentName(new File(getTestDataPath()).getAbsolutePath())
         );
 
-        LanguageLevelProjectExtension.getInstance(getProject())
-                .setLanguageLevel(getLanguageLevel());
+        WriteAction.runAndWait(() ->
+                LanguageLevelProjectExtension.getInstance(getProject())
+                        .setLanguageLevel(getLanguageLevel()));
 
         Interp4jTestUtil.loadLibrary(fixture.getProjectDisposable(), fixture.getModule(), "interp4j-core", "interp4j-core.jar");
         Interp4jTestUtil.loadLibrary(fixture.getProjectDisposable(), fixture.getModule(), "petitparser-core", "petitparser-core.jar");

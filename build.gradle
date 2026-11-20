@@ -3,7 +3,7 @@ import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 plugins {
     id 'java'
     id "io.freefair.lombok" version "9.5.0"
-    id 'org.jetbrains.intellij.platform' version '2.18.1'
+    id 'org.jetbrains.intellij.platform' version '2.20.1'
 }
 
 group 'dev.khbd.interp4j'
@@ -26,13 +26,13 @@ dependencies {
     implementation group: 'dev.khbd.interp4j', name: 'interp4j-core', version: interp4j_version
     implementation group: 'com.github.petitparser', name: 'petitparser-core', version: petit_parser_version
 
-    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.11.0-M2'
-    testRuntimeOnly group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.11.0-M2'
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '6.1.3'
+    testRuntimeOnly group: 'org.junit.platform', name: 'junit-platform-launcher', version: '6.1.3'
     testRuntimeOnly group: 'junit', name: 'junit', version: '4.13.2'
-    testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.9.0'
+    testImplementation group: 'org.assertj', name: 'assertj-core', version: '4.0.0-M1'
 
     intellijPlatform {
-        intellijIdeaCommunity(intellijVersion())
+        intellijIdea(intellijVersion())
 
         bundledPlugin "com.intellij.java"
 
